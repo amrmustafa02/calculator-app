@@ -1,4 +1,4 @@
-import 'package:calculator/MyColors.dart';
+import 'package:calculator/Ui/MyColors.dart';
 import 'package:flutter/material.dart';
 
 import 'digit_button.dart';
