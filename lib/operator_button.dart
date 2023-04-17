@@ -20,7 +20,7 @@ class RoundedButton extends StatelessWidget {
       flex: flexBtn,
       child: Container(
         margin: const EdgeInsets.all(10),
-        height: 75,
+        height: 60,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
