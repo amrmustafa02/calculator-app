@@ -25,9 +25,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-
-
-            Spacer(),
+            const Spacer(),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
