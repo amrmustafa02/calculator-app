@@ -2,7 +2,7 @@ import 'package:calculator/MyColors.dart';
 import 'package:flutter/material.dart';
 
 import 'digit_button.dart';
-import 'operator_button.dart';
+import 'equal_button.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
