@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:calculator/Ui/MyColors.dart';
+import 'package:calculator/Ui/resutl_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 import 'digit_button.dart';
 import 'equal_button.dart';
@@ -14,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String result = "";
   String operationsText = "";
+  Color resultColor = Colors.black;
 
   @override
   Widget build(BuildContext context) {
@@ -34,28 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             const Spacer(),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                alignment: Alignment.topRight,
-                margin: const EdgeInsets.all(10),
-                child: Text(
-                  operationsText,
-                  style:
-                      const TextStyle(fontSize: 20, color: MyColors.textColor),
-                ),
-              ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                child: Text(
-                  result,
-                  style: const TextStyle(fontSize: 40, color: Colors.black),
-                ),
-              ),
-            ),
+            ResultWidget(result, operationsText, resultColor),
             const SizedBox(
               height: 5,
             ),
@@ -80,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   textCol: Colors.white,
                 ),
                 DigitBtn(
-                  "x",
+                  "×",
                   onUserClickOnDigit,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
@@ -89,10 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Row(
               children: [
-                DigitBtn(
-                  "7",
-                 onUserClickOnDigit
-                ),
+                DigitBtn("7", onUserClickOnDigit),
                 DigitBtn(
                   "8",
                   onUserClickOnDigit,
@@ -102,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onUserClickOnDigit,
                 ),
                 DigitBtn(
-                  "/",
+                  "÷",
                   onUserClickOnDigit,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
@@ -166,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   "=",
-                  onUserClickOnDigit,
+                  onClickEqual,
                   color: Colors.green,
                   flexBtn: 1,
                   textCol: Colors.white,
@@ -184,22 +165,51 @@ class _HomeScreenState extends State<HomeScreen> {
       operationsText += text;
     });
   }
-  void onClickRemoveLastChar(_){
+
+  void onClickRemoveLastChar(_) {
     setState(() {
       if (operationsText.isNotEmpty) {
         operationsText = operationsText.substring(0, operationsText.length - 1);
       }
     });
   }
-  void onClickRemoveAll(_){
+
+  void onClickRemoveAll(_) {
     setState(() {
-      operationsText ="";
+      operationsText = "";
     });
   }
-  void onClickEqual(_){
 
-  }
-  void handleErrors(_){
+  void onClickEqual(_) {
+    resultColor = Colors.black;
+    setState(() {
+      // check if equation empty
+      if (operationsText.isEmpty) {
+        result = "0";
+        return;
+      }
 
+      // replace all x with *
+      // replace all ÷ with /
+      // to make correct expression
+      String expression = operationsText;
+      expression = expression.replaceAll('×', '*');
+      expression = expression.replaceAll('÷', '/');
+
+      // evaluate expression
+      try {
+        Parser parser = Parser();
+        Expression exp = parser.parse(expression);
+        ContextModel contextModel = ContextModel();
+        result = '${exp.evaluate(EvaluationType.REAL, contextModel)}';
+      }
+      // check if expression is not correct ,then show message error to user
+      catch (e) {
+        resultColor = Colors.red;
+        result = "Not correct equation";
+      }
+    });
   }
+
+  void handleErrors(_) {}
 }
