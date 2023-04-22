@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
       ),
       body: Container(
-        padding: const EdgeInsets.all(0),
+        margin: const EdgeInsets.only(bottom: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -171,9 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       if (operationsText.isNotEmpty) {
         operationsText = operationsText.substring(0, operationsText.length - 1);
-      evaluateEquation();
+        evaluateEquation();
       }
-
     });
   }
 
@@ -210,15 +209,19 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         return;
       }
+
+
+      // if operation is after operation
       if (operationsText[operationsText.length - 1] == '+' ||
           operationsText[operationsText.length - 1] == '×' ||
           operationsText[operationsText.length - 1] == '-' ||
           operationsText[operationsText.length - 1] == '%' ||
-          operationsText[operationsText.length - 1] == '÷'||operationsText.isEmpty) {
+          operationsText[operationsText.length - 1] == '÷' ||
+          operationsText.isEmpty) {
         return;
       }
 
-      operationsText+=operation;
+      operationsText += operation;
     });
   }
 
@@ -250,6 +253,18 @@ class _HomeScreenState extends State<HomeScreen> {
       Expression exp = parser.parse(expression);
       ContextModel contextModel = ContextModel();
       result = '${exp.evaluate(EvaluationType.REAL, contextModel)}';
+
+      // handle if result is integer
+      // if last char i result is 0
+      // and before it is dot operation
+      // 18.0 then then remove (.0)
+      if (result.length >= 2) {
+        if (result[result.length - 1] == '0' &&
+            result[result.length - 2] == '.') {
+          result = result.substring(0,result.length-2);
+        }
+      }
+
       return true;
     }
     // check if expression is not correct ,then show message error to user
