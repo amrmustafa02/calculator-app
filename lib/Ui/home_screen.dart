@@ -59,13 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   "%",
-                  onUserClickOnDigit,
+                  handleErrors,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
                 ),
                 DigitBtn(
                   "×",
-                  onUserClickOnDigit,
+                  handleErrors,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
                 ),
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   "÷",
-                  onUserClickOnDigit,
+                  handleErrors,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
                 ),
@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   "-",
-                  onUserClickOnDigit,
+                  handleErrors,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
                 ),
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   "+",
-                  onUserClickOnDigit,
+                  handleErrors,
                   color: MyColors.oprCrl,
                   textCol: Colors.white,
                 ),
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 DigitBtn(
                   ".",
-                  onUserClickOnDigit,
+                  handleErrors,
                   flexBtn: 1,
                 ),
                 DigitBtn(
@@ -163,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void onUserClickOnDigit(String text) {
     setState(() {
       operationsText += text;
+      evaluateEquation();
     });
   }
 
@@ -170,13 +171,16 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       if (operationsText.isNotEmpty) {
         operationsText = operationsText.substring(0, operationsText.length - 1);
+      evaluateEquation();
       }
+
     });
   }
 
   void onClickRemoveAll(_) {
     setState(() {
       operationsText = "";
+      result = "0";
     });
   }
 
@@ -185,31 +189,72 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       // check if equation empty
       if (operationsText.isEmpty) {
-        result = "0";
         return;
       }
-
-      // replace all x with *
-      // replace all ÷ with /
-      // to make correct expression
-      String expression = operationsText;
-      expression = expression.replaceAll('×', '*');
-      expression = expression.replaceAll('÷', '/');
-
-      // evaluate expression
-      try {
-        Parser parser = Parser();
-        Expression exp = parser.parse(expression);
-        ContextModel contextModel = ContextModel();
-        result = '${exp.evaluate(EvaluationType.REAL, contextModel)}';
-      }
-      // check if expression is not correct ,then show message error to user
-      catch (e) {
-        resultColor = Colors.red;
-        result = "Not correct equation";
+      if (evaluateEquation()) {
+        operationsText = result;
       }
     });
   }
 
-  void handleErrors(_) {}
+  void handleErrors(String operation) {
+    setState(() {
+      if (operation == '.') {
+        handleDot();
+        return;
+      }
+
+      if (operation == '-') {
+        if (operationsText[operationsText.length - 1] != '-') {
+          operationsText += '-';
+        }
+        return;
+      }
+      if (operationsText[operationsText.length - 1] == '+' ||
+          operationsText[operationsText.length - 1] == '×' ||
+          operationsText[operationsText.length - 1] == '-' ||
+          operationsText[operationsText.length - 1] == '%' ||
+          operationsText[operationsText.length - 1] == '÷'||operationsText.isEmpty) {
+        return;
+      }
+
+      operationsText+=operation;
+    });
+  }
+
+  void handleDot() {
+    for (int i = operationsText.length - 1; i >= 0; i--) {
+      if (operationsText[i] == '.') {
+        return;
+      }
+      if (operationsText[i] == '+' ||
+          operationsText[i] == '-' ||
+          operationsText[i] == '×' ||
+          operationsText[i] == '÷') {
+        operationsText += '.';
+        return;
+      }
+    }
+  }
+
+  bool evaluateEquation() {
+    // replace all x with *
+    // replace all ÷ with /
+    // to make correct expression
+    String expression = operationsText;
+    expression = expression.replaceAll('×', '*');
+    expression = expression.replaceAll('÷', '/');
+
+    try {
+      Parser parser = Parser();
+      Expression exp = parser.parse(expression);
+      ContextModel contextModel = ContextModel();
+      result = '${exp.evaluate(EvaluationType.REAL, contextModel)}';
+      return true;
+    }
+    // check if expression is not correct ,then show message error to user
+    catch (e) {
+      return false;
+    }
+  }
 }
