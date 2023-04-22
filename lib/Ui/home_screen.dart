@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 RoundedButton(
                   "0",
+                  onUserClickOnDigit,
                   flexBtn: 2,
                 ),
                 DigitBtn(
@@ -210,7 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-
       // if operation is after operation
       if (operationsText[operationsText.length - 1] == '+' ||
           operationsText[operationsText.length - 1] == '×' ||
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (result.length >= 2) {
         if (result[result.length - 1] == '0' &&
             result[result.length - 2] == '.') {
-          result = result.substring(0,result.length-2);
+          result = result.substring(0, result.length - 2);
         }
       }
 

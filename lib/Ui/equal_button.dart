@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class RoundedButton extends StatelessWidget {
+  Function onUserCLick;
   Color color;
   String text;
   int flexBtn;
   Color textCol;
 
-  RoundedButton(this.text,
+  RoundedButton(this.text, this.onUserCLick,
       {this.textCol = Colors.black,
       this.color = MyColors.btnCrl,
       this.flexBtn = 1,
@@ -26,7 +27,9 @@ class RoundedButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
               backgroundColor: color),
-          onPressed: () {},
+          onPressed: () {
+            onUserCLick(text);
+          },
           child: Text(
             text,
             style: TextStyle(color: textCol, fontSize: 20),
